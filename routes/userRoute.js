@@ -110,4 +110,57 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
+//update user
+
+router.put('/:userId', verifyToken, async (req, res) => {
+  try {
+    // Extract the user ID from the token
+    const userId = req.userId;
+
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update the user's profile with the data from the request body
+    user.name = req.body.name;
+    user.email = req.body.email;
+    // Add other fields as needed
+
+    // Save the updated user
+    await user.save();
+
+    return res.status(200).json({ message: 'Profile updated successfully', user });
+  } catch (error) {
+    console.error('Failed to update user profile:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+//delete user
+
+router.delete('/:userId', verifyToken, async (req, res) => {
+  try {
+    // Extract the user ID from the token
+    const userId = req.userId;
+
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete the user from the database
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({ message: 'Profile deleted successfully' });
+  } catch (error) {
+    console.error('Failed to delete user profile:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;
